@@ -3,37 +3,38 @@ const { promiseTheaterIXX, promiseTheaterVGC } = require("./external.js");
 // TODO: Buat fungsi promiseOutput sesuai ketentuan readme
 // const promiseOutput = null;
 
-const promiseOutput = (emosi) => {
+const calculateTheater = async (emosi) => {
+  let theaterIXX = await promiseTheaterIXX()
+  let theaterVGC = await promiseTheaterVGC()
+
+  let allTheater = []
+  allTheater.push(...theaterIXX, ...theaterVGC)
+
+  let count1 = 0;
+  let count2 = 0;
+
+  for (let i = 0; i < allTheater.length; i++) {
+    if (allTheater[i].hasil === "marah") {
+      count1++
+    } else {
+      count2++
+    }
+  }
+
+  if (emosi === "marah") {
+    return count1
+  } else {
+    return count2
+  }
+}
+
+const promiseOutput = async (emosi) => {
   return new Promise((resolve, reject) => {
-    promiseTheaterIXX()
-      .then((result) => {
-        return new Promise((resolve, reject) => {
-          let count = 0;
-          for (let i = 0; i < result.length; i++) {
-            if (result[i].hasil === emosi) {
-              count++
-            }
-          }
-          return resolve(count)
-        })
-      })
-      .then((result => {
-        return new Promise((resolve, reject) => {
-          promiseTheaterVGC()
-            .then((data) => {
-              let count2 = 0;
-              for (let i = 0; i < data.length; i++) {
-                if (data[i].hasil === emosi) {
-                  count2++
-                }
-              }
-              return resolve(result + count2)
-            })
-        })
-          .then((result) => {
-            console.log(result)
-          })
-      }))
+    if (emosi === "marah") {
+      return resolve(calculateTheater("marah"))
+    } else if (emosi === "tidak marah") {
+      return resolve(calculateTheater("tidak marah"))
+    }
   })
 }
 
